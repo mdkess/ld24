@@ -7,6 +7,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import xxx.rtin.ma.games.ships.CircleShip;
+import xxx.rtin.ma.games.ships.MotherShip;
+import xxx.rtin.ma.games.ships.SquareShip;
+import xxx.rtin.ma.games.ships.TriangleShip;
 import xxx.rtin.ma.games.weapons.Blaster;
 import xxx.rtin.ma.games.weapons.MissileLauncher;
 
@@ -30,11 +34,17 @@ public class GameMain extends BasicGame {
 	    g.setBackground(StaticConfig.BACKGROUND_COLOR);
 	    g.setAntiAlias(true);
 	    
-	    mWorld.setPlayer(new PlayerEntity(mWorld, 400, 300, 0));
+	    mWorld.setPlayer(new PlayerEntity(mWorld, new TriangleShip(), 400, 300, 0));
 	    mWorld.addEntity(mWorld.getPlayer());
-	    GameEntity t = new GameEntity(mWorld, 200, 200, 45);
+	    GameEntity t = new GameEntity(mWorld, new TriangleShip(), 200, 200, 45);
 	    mWorld.getPlayer().setTarget(t);
 	    mWorld.addEntity(t);
+	    
+	    mWorld.addEntity(new GameEntity(mWorld, new SquareShip(), 300, 300, 45));
+	    mWorld.addEntity(new GameEntity(mWorld, new CircleShip(), 400, 400, 45));
+	    GameEntity mothership = new GameEntity(mWorld, new MotherShip(), 400, 100, 45);
+	    mothership.setRadius(100);
+	    mWorld.addEntity(mothership);
 	    
 	    
 	}
@@ -67,12 +77,15 @@ public class GameMain extends BasicGame {
         if(input.isKeyDown(Input.KEY_SPACE)) {
             player.fire();
         }
+        if(input.isKeyPressed(Input.KEY_E)) {
+            player.retarget();
+        }
         //TODO not new each time.
         //TODO wpn stats
         if(input.isKeyPressed(Input.KEY_1)) {
-            player.setWeapon(new MissileLauncher(mWorld, player, 1000));
+            player.setWeapon(new MissileLauncher(mWorld, 1000));
         } else if(input.isKeyPressed(Input.KEY_2)){
-            player.setWeapon(new Blaster(mWorld, player, 500));
+            player.setWeapon(new Blaster(mWorld, 500));
         }
         
 

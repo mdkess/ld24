@@ -5,14 +5,15 @@ import xxx.rtin.ma.games.SoundCache;
 import xxx.rtin.ma.games.World;
 
 public class Blaster extends Weapon {
-    public Blaster(World world, GameEntity owner, int cooldown) {
-        super(world, owner, cooldown);
+    public Blaster(World world, int cooldown) {
+        super(world, cooldown);
     }
 
     @Override
-    protected void fireWeapon() {
+    protected boolean fireWeapon(GameEntity owner) {
         SoundCache.LASER_FIRE.play();
-        mWorld.addProjectile(new Bullet(mWorld, mOwner));
+        mWorld.addProjectile(new Bullet(mWorld, owner));
+        return true;
     }
 
 }

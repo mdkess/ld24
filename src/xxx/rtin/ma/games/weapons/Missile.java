@@ -1,36 +1,24 @@
 package xxx.rtin.ma.games.weapons;
 
-import java.util.Random;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.util.FastTrig;
 
 import xxx.rtin.ma.games.GameEntity;
-import xxx.rtin.ma.games.Particle;
 import xxx.rtin.ma.games.Projectile;
-import xxx.rtin.ma.games.ShapeCache;
 import xxx.rtin.ma.games.StaticConfig;
 import xxx.rtin.ma.games.StaticUtil;
 import xxx.rtin.ma.games.World;
+import xxx.rtin.ma.games.ships.MissileShip;
 
 public class Missile extends Projectile {
-    
-    private static final Shape sMissileTriangle;
-    private static final Shape sThrustTriangle;
-    static {
-        sMissileTriangle = new Polygon(new float[] {-0.5f, -0.5f, 0.5f, -0.5f, 0, 0.5f});
-        sThrustTriangle = new Polygon(new float[] { -0.5f, -0.6f, 0.5f, -0.6f, 0, -1.0f});
-    }
-    
+       
     private GameEntity mOwner;
     private GameEntity mTarget;
     
     public Missile(World world, GameEntity owner, GameEntity target) {
-        super(world, owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
+        super(world, new MissileShip(), owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
 
         mOwner = owner;
         mTarget = target;
@@ -93,12 +81,7 @@ public class Missile extends Projectile {
         g.rotate(0, 0, getAngle() - 90);
         g.scale(10, 10);
         
-        
-        
-        g.setColor(StaticConfig.MISSILE_COLOR);
-        g.fill(sMissileTriangle);
-        g.setColor(StaticConfig.SHIP_THRUST_COLOR);
-        g.fill(sThrustTriangle);
+        mShip.render(g,  true);
         
         g.popTransform();
     }

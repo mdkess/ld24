@@ -4,23 +4,16 @@ import java.util.Random;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.util.FastTrig;
 
+import xxx.rtin.ma.games.ships.Ship;
 import xxx.rtin.ma.games.weapons.MissileLauncher;
 import xxx.rtin.ma.games.weapons.Weapon;
 
 public class GameEntity {
-    private static final Shape sOuterTriangle;
-    private static final Shape sInnerTriangle;
-    private static final Shape sThrustTriangle;
-    static {
-        sOuterTriangle = new Polygon(new float[] { -1, -1, 1, -1, 0, 2});
-        sInnerTriangle = new Polygon(new float[] { -0.5f, -0.5f, 0.5f, -0.5f, 0, 1.0f});
-        sThrustTriangle = new Polygon(new float[] { -0.5f, -1.1f, 0.5f, -1.1f, 0, -1.5f});
-    }
+
+    protected Ship mShip;
     
     protected World mWorld;
     
@@ -35,12 +28,15 @@ public class GameEntity {
     protected float mRadius;
     private Contrail mContrail;
     
-    private GameEntity mTarget; //Our target, if available.
-    public boolean hasTarget() { return mTarget != null; }
-    public GameEntity getTarget() { return mTarget; }
-    public void setTarget(GameEntity target) { mTarget = target; }
+    public boolean hasTarget() { return mWeapon != null && mWeapon.hasTarget(); }
+    public void setTarget(GameEntity target) {
+        if(mWeapon != null) {
+            mWeapon.setTarget(target);
+        }
+    }
     
-    public float getRadius() {
+    public float getRadius() { return mRadius; }
+    public float getHitRadius() {
         if(mCurShield > 0) {
             return 2*mRadius;
         } else {
@@ -65,7 +61,14 @@ public class GameEntity {
     private float mTimeBetweenExhaust;
     private float mLastExhaust;
     
-    public GameEntity(World world, float x, float y, float angle) {
+    public float getTotalHealth() { return mMaxHealth; }
+    public float getCurrentHealth() { return mCurHealth; }
+    public float getTotalShield() { return mMaxShield; }
+    public float getCurrentShield() { return mCurShield; }
+    
+    public Ship getShip() { return mShip; }
+    
+    public GameEntity(World world, Ship ship, float x, float y, float angle) {
         mWorld = world;
         mPos = new Vector2f(x, y);
         mVel = new Vector2f();
@@ -93,7 +96,9 @@ public class GameEntity {
         mTimeBetweenExhaust = 50;
         mLastExhaust = 0;
         
-        setWeapon(new MissileLauncher(mWorld, this, 1000));
+        mShip = ship;
+        mShip.setOwner(this);
+        setWeapon(new MissileLauncher(mWorld, 1000));
     }
     
     private void updateStats(int delta) {
@@ -213,7 +218,7 @@ public class GameEntity {
         }        
     }
 
-    private final Random mRandom = new Random();
+    protected final Random mRandom = new Random();
     public void update(int delta) {
         if(mContrail != null) {
             mContrail.update(delta);
@@ -271,13 +276,9 @@ public class GameEntity {
             g.drawLine(0, 0, mVel.x, mVel.y);
         }
         g.rotate(0, 0, mAngle - 90);
-        g.scale(10, 10);
+        g.scale(mRadius, mRadius);
         
-        
-        g.setColor(StaticConfig.SHIP_OUTER_COLOR);
-        g.fill(sOuterTriangle);
-        g.setColor(StaticConfig.SHIP_INNER_COLOR);
-        g.fill(sInnerTriangle);
+        mShip.render(g, mDrawThrust);
         
         //draw shield;
         if(mCurShield > 0) {
@@ -286,27 +287,22 @@ public class GameEntity {
             g.drawOval(-2, -2, 4, 4);
             g.setLineWidth(1.0f);
         }
-        if(mDrawThrust) {
-            
-            g.setColor(StaticConfig.SHIP_THRUST_COLOR);
-            g.fill(sThrustTriangle);
-            
-        }
         
         g.popTransform();
     }
     
     
-    private Weapon mWeapon;
+    protected Weapon mWeapon;
     public void setWeapon(Weapon weapon) {
         mWeapon = weapon;
     }
     
     public void fire() {
         if(mWeapon != null) {
-            mWeapon.fire();
+            mWeapon.fire(this);
         }
         
     }
     
 }
+

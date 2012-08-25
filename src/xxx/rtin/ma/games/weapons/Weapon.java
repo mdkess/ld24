@@ -9,20 +9,27 @@ public abstract class Weapon {
     protected GameEntity mOwner;
     protected int mCooldown;
     protected boolean mReady = true;
+    protected GameEntity mTarget;
     
-    public Weapon(World world, GameEntity owner, int cooldown) {
+    public Weapon(World world, int cooldown) {
         mTotalCooldown = cooldown;
-        mOwner = owner;
         mWorld = world;
         mCooldown = 0;
     }
     
-    protected abstract void fireWeapon();
+    public void setTarget(GameEntity target) {
+        mTarget = target;
+    }
+    public boolean hasTarget() {
+        return mTarget != null;
+    }
+    public GameEntity getTarget() { return mTarget; }
     
-    public void fire() {
+    protected abstract boolean fireWeapon(GameEntity owner);
+    
+    public void fire(GameEntity owner) {
         if(mReady) {
-            if(mOwner.hasTarget()) {
-                fireWeapon();
+            if(fireWeapon(owner)) {
 
                 mCooldown = mTotalCooldown;
                 mReady = false;
@@ -34,8 +41,15 @@ public abstract class Weapon {
         if(!mReady) {
             mCooldown -= delta;
             if(mCooldown <= 0) {
+                mCooldown = 0;
                 mReady = true;
             }
         }
+    }
+    public int getCooldown() {
+        return mCooldown;
+    }
+    public int getTotalCooldown() {
+        return mTotalCooldown;
     }
 }

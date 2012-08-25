@@ -6,12 +6,14 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.util.FastTrig;
 
+import xxx.rtin.ma.games.ships.Ship;
+
 public abstract class Projectile extends GameEntity {
 
     private GameEntity mOwner;
     
-    public Projectile(World world, GameEntity owner, float x, float y, float angle) {
-        super(world, x, y, angle);
+    public Projectile(World world, Ship ship, GameEntity owner, float x, float y, float angle) {
+        super(world, ship, x, y, angle);
         mOwner = owner;
     }
     Random r = new Random();
@@ -42,7 +44,11 @@ public abstract class Projectile extends GameEntity {
                             ShapeCache.SQUARE, Color.white, 1000, mPos.x, mPos.y,
                             (float)FastTrig.cos(rads) * v, (float)FastTrig.sin(rads) * v, 0,
                             r.nextFloat() * 9 + 1, 180 - 360 * r.nextFloat()));
-            
+        }
+        for(int i=0; i < 3; ++i) {
+            float angle = targetAngle - variance + 2*variance * r.nextFloat();
+            float rads = (float) Math.toRadians(angle);
+            float v = r.nextFloat() * 100;
             mWorld.addCoin(
                     new Coin(
                             ShapeCache.SQUARE, mPos.x, mPos.y,

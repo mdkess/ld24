@@ -19,7 +19,7 @@ public abstract class Projectile extends GameEntity {
     Random r = new Random();
     @Override
     public void onCollision(GameEntity other) {
-        if(other == mOwner) { return; }
+        if(other.getTeam() == mOwner.getTeam()) { return; }
         if(other.hasShield()) {
             SoundCache.MISSILE_HIT_SHIELD.play();
         } else {

@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
+import xxx.rtin.ma.games.ai.AttackAIController;
 import xxx.rtin.ma.games.ships.CircleShip;
 import xxx.rtin.ma.games.ships.MotherShip;
 import xxx.rtin.ma.games.ships.SquareShip;
@@ -39,9 +40,22 @@ public class GameMain extends BasicGame {
 	    GameEntity t = new GameEntity(mWorld, new TriangleShip(), 200, 200, 45);
 	    mWorld.getPlayer().setTarget(t);
 	    mWorld.addEntity(t);
+	    t.setController(new AttackAIController(t));
+	    t.setWeapon(new Blaster(mWorld, 500));
 	    
-	    mWorld.addEntity(new GameEntity(mWorld, new SquareShip(), 300, 300, 45));
-	    mWorld.addEntity(new GameEntity(mWorld, new CircleShip(), 400, 400, 45));
+	    GameEntity s = new GameEntity(mWorld, new SquareShip(), 300, 300, 45);
+	    mWorld.addEntity(s);
+	    s.setController(new AttackAIController(s));
+	    s.setWeapon(new MissileLauncher(mWorld, 1000));
+	    s.setTarget(mWorld.getPlayer());
+	    
+	    GameEntity c = new GameEntity(mWorld, new CircleShip(), 400, 400, 45);
+	    mWorld.addEntity(c);
+	    c.setController(new AttackAIController(c));
+        c.setWeapon(new Blaster(mWorld, 500));
+        c.setTarget(mWorld.getPlayer());
+        
+        
 	    GameEntity mothership = new GameEntity(mWorld, new MotherShip(), 400, 100, 45);
 	    mothership.setRadius(100);
 	    mWorld.addEntity(mothership);

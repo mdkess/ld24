@@ -10,21 +10,24 @@ import xxx.rtin.ma.games.ships.BlasterShip;
 
 //bullets don't accelerate.
 public class Bullet extends Projectile {
+    private int mLife = 3000; //missiles last three seconds.
 
     public Bullet(World world, GameEntity owner) {
         super(world, new BlasterShip(), owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
         
-        setRadius(5);
-        setMaxSpeed(300);
-        
+        setRadius(5);        
         float r = (float) Math.toRadians(owner.getAngle());
-        mVel.x = (float) (mMaxSpeed * FastTrig.cos(r));
-        mVel.y = (float) (mMaxSpeed * FastTrig.sin(r));
+        mVel.x = (float) (mShip.getMaxSpeed() * FastTrig.cos(r));
+        mVel.y = (float) (mShip.getMaxSpeed() * FastTrig.sin(r));
     }
     
     @Override
     public void update(int delta) {
         super.update(delta);
+        mLife -= delta;
+        if(mLife < 0) {
+            mWorld.removeProjectile(this);
+        }
     }
     
     @Override

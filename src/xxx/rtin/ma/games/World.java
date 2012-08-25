@@ -1,6 +1,7 @@
 package xxx.rtin.ma.games;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.newdawn.slick.Color;
@@ -17,6 +18,26 @@ public class World {
             sInstance = new World();
         }
         return sInstance;
+    }
+    
+    private String mToastMessage;
+    private int mToastDuration = 0;
+    private class Toast {
+        int life;
+        final int duration;
+        String message;
+        public Toast(String message, int duration) {
+            this.message = message;
+            this.duration = duration;
+            this.life = duration;
+        }
+    }
+    
+    private List<Toast> mToasts = new LinkedList<Toast>();
+    
+    
+    public void toast(String message, int duration) {
+        mToasts.add(new Toast(message, duration));
     }
     
     private PlayerEntity mPlayer;
@@ -80,6 +101,13 @@ public class World {
         }
         mParticles.removeAll(mParticlesToRemove);
         mParticlesToRemove.clear();
+        
+        if(!mToasts.isEmpty()) {
+            mToasts.get(0).life -= delta;
+            if(mToasts.get(0).life < 0) {
+                mToasts.remove(0);
+            }
+        }
     }
 	public void render(Graphics g) {
 	    g.pushTransform();
@@ -105,7 +133,16 @@ public class World {
 		mPlayer.drawTarget(g);
 		g.popTransform();
 		drawHUD(g);
-
+		drawToast(g);
+	}
+	
+	private void drawToast(Graphics g) {
+	    if(!mToasts.isEmpty()) {
+	        Toast t = mToasts.get(0);
+	        Color c = new Color(1, 1, 1, (float)t.life / t.duration);
+	        g.setColor(c);
+	        g.drawString(t.message, 400 - t.message.length()*4, 200);
+	    }
 	}
 	
 	private static Color HUD_COLOR1 = new Color(0.5f, 0.5f, 0.5f, 0.5f);
@@ -158,7 +195,7 @@ public class World {
        float playerHealthPct = mPlayer.getCurrentHealth() / mPlayer.getTotalHealth();
        float playerShieldPct = mPlayer.getCurrentShield() / mPlayer.getTotalShield();
        float playerWeaponPct = mPlayer.getWeaponCooldownPercent();
-       float playerLevelPct = (float)mPlayer.getCoins() / PlayerEntity.LEVEL_COST;
+       float playerLevelPct = (float)mPlayer.getLevelPercent();
        g.setColor(HUD_COLOR2);
        //hp
        g.fillRect(760, 490, 30, 100);

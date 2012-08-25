@@ -14,6 +14,10 @@ public class SquareShip extends Ship {
         sInnerSquare = new Polygon(new float[] { -0.75f, -0.75f, 0.5f, -0.75f, 0.5f, 0.5f, -0.75f, 0.5f});
     }
     
+    public SquareShip() {
+        super(100, 100, 100);
+    }
+    
     @Override
     public void render(Graphics g, boolean thrust) {
         g.setColor(StaticConfig.SHIP_OUTER_COLOR);

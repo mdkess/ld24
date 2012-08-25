@@ -19,15 +19,21 @@ public class PlayerEntity extends GameEntity {
         super.update(delta);
 
     }
-    static final int LEVEL_COST = 10;
+    @Override
+    public int getTeam() {
+        return 2;
+    }
+    private int mLevelCost = 10;
     private int mCoins = 0;
+    private int mTotalCoins = 0;
     private int mLevel = 0;
     public void giveCoin() {
         ++mCoins;
-        float newRadius = (float) (Math.sqrt(mCoins/Math.PI) + 10);
+        ++mTotalCoins;
+        float newRadius = (float) (Math.sqrt(mTotalCoins/Math.PI) + 10);
         setRadius(newRadius);
-        if(mCoins % LEVEL_COST == 0) {
-            mCoins -= LEVEL_COST;
+        if(mCoins % mLevelCost == 0) {
+            mCoins -= mLevelCost;
             levelUp();
         }
     }
@@ -37,7 +43,10 @@ public class PlayerEntity extends GameEntity {
     private void levelUp() {
         SoundCache.PLAYER_LEVELUP.play();
         ++mLevel;
+        mLevelCost += 5;
         //heal!
+        mMaxHealth += 5;
+        mMaxShield += 5;
         mCurHealth = mMaxHealth;
         mCurShield = mMaxShield;
         //Explode!
@@ -48,6 +57,7 @@ public class PlayerEntity extends GameEntity {
                     (float)FastTrig.cos(rads) * 50 + mVel.x, (float)FastTrig.sin(rads) * 50 + mVel.y, 0,
                     mRandom.nextFloat() * 9 + 1, 180 - 360 * mRandom.nextFloat()));
         }
+        mWorld.toast("LEVEL UP!", 1000);
     }
     
 
@@ -79,6 +89,9 @@ public class PlayerEntity extends GameEntity {
             return 1.0f - (float) mWeapon.getCooldown() / (float)mWeapon.getTotalCooldown();
         }
         return 0;
+    }
+    public float getLevelPercent() {
+        return (float)mCoins / mLevelCost;
     }
 
 

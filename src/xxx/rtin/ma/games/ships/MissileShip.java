@@ -4,11 +4,15 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Shape;
 
-import xxx.rtin.ma.games.GameEntity;
 import xxx.rtin.ma.games.StaticConfig;
 
 public class MissileShip extends Ship {
 
+    public MissileShip() {
+        super(90, 300, 150);
+
+    }
+    
     private static final Shape sMissileTriangle;
     private static final Shape sThrustTriangle;
     static {

@@ -7,6 +7,7 @@ public class SoundCache {
     public static Sound MISSILE_FIRE;
     public static Sound MISSILE_HIT_SHIELD;
     public static Sound MISSILE_HIT_NOSHIELD;
+    public static Sound MISSILE_MISS;
     public static Sound LASER_FIRE;
     public static Sound COLLECT_COIN;
     public static Sound PLAYER_LEVELUP;
@@ -18,6 +19,7 @@ public class SoundCache {
             MISSILE_FIRE = new Sound("res/missile_fire.wav"); 
             MISSILE_HIT_SHIELD = new Sound("res/missile_shield.wav");
             MISSILE_HIT_NOSHIELD = new Sound("res/missile_noshield.wav");
+            MISSILE_MISS = new Sound("res/missile_miss.wav");
             LASER_FIRE = new Sound("res/laser_fire.wav");
             COLLECT_COIN = new Sound("res/coin.wav");
             PLAYER_LEVELUP = new Sound("res/player_levelup.wav");

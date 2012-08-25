@@ -7,6 +7,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.util.FastTrig;
 
+import xxx.rtin.ma.games.ai.AIController;
 import xxx.rtin.ma.games.ships.Ship;
 import xxx.rtin.ma.games.weapons.MissileLauncher;
 import xxx.rtin.ma.games.weapons.Weapon;
@@ -20,9 +21,6 @@ public class GameEntity {
     protected Vector2f mPos;
     protected Vector2f mVel;
     protected float mAngle;
-    protected float mMaxSpeed;
-    protected float mTurnRate;
-    protected float mThrustForce;
     protected float mStoppingForce;
     protected float mMass;
     protected float mRadius;
@@ -68,14 +66,13 @@ public class GameEntity {
     
     public Ship getShip() { return mShip; }
     
+    protected AIController mController;
+    
     public GameEntity(World world, Ship ship, float x, float y, float angle) {
         mWorld = world;
         mPos = new Vector2f(x, y);
         mVel = new Vector2f();
         mAngle = angle;
-        mMaxSpeed = 200;
-        mTurnRate = 360; //degrees/s
-        mThrustForce = 200;
         mStoppingForce = 100;
         mMass = 1.0f;
         mRadius = 10;
@@ -101,6 +98,10 @@ public class GameEntity {
         setWeapon(new MissileLauncher(mWorld, 1000));
     }
     
+    public void setController(AIController controller) {
+        mController = controller;
+    }
+    
     private void updateStats(int delta) {
         float df = (delta/1000.0f);
         mCurShield += mShieldRegen * df;
@@ -122,23 +123,19 @@ public class GameEntity {
         return mCurShield > 0;
     }
 
+    public int getTeam() {
+        return 1;
+    }
     
     public void onCollision(GameEntity other) {
         
     }
-    
-    public void setTurnRate(float turnRate) {
-        mTurnRate = turnRate;
-    }
-    public void setMaxSpeed(float maxSpeed) {
-        mMaxSpeed = maxSpeed;
-    }
-    public void setThrustForce(float thrust) {
-        mThrustForce = thrust;
-    }
-    
+
     public Vector2f getPos() {
         return mPos;
+    }
+    public Vector2f getVel() {
+        return mVel;
     }
     public float getAngle() {
         return mAngle;
@@ -174,19 +171,19 @@ public class GameEntity {
     }
     
     public void rotateCW(int delta) {
-        mAngle += (delta/1000.0f) * mTurnRate;
+        mAngle += (delta/1000.0f) * mShip.getTurnRate();
         if(mAngle > 360) { mAngle -= 360; }
     }
     
     public void rotateCCW(int delta) {
-        mAngle -= (delta/1000.0f) * mTurnRate;
+        mAngle -= (delta/1000.0f) * mShip.getTurnRate();
         if(mAngle < 0) { mAngle += 360; }
     }
     
     public void turnTowardTarget(int delta, float targetAngle) {
         if(targetAngle < 0) targetAngle += 360;
         float difference = StaticUtil.AngleBetween(mAngle, targetAngle);
-        float maxTurn = (delta/1000.0f) * mTurnRate;
+        float maxTurn = (delta/1000.0f) * mShip.getTurnRate();
         if(Math.abs(difference) <= maxTurn) {
             mAngle = targetAngle;
         } else if(difference > 0) {
@@ -213,13 +210,16 @@ public class GameEntity {
         mVel.x = vx;
         mVel.y = vy;
         
-        if(mVel.length() > mMaxSpeed) {
-            mVel.scale(mMaxSpeed / mVel.length());
+        if(mVel.length() > mShip.getMaxSpeed()) {
+            mVel.scale(mShip.getMaxSpeed() / mVel.length());
         }        
     }
 
     protected final Random mRandom = new Random();
     public void update(int delta) {
+        if(mController != null) {
+            mController.update(delta);
+        }
         if(mContrail != null) {
             mContrail.update(delta);
         }
@@ -231,19 +231,30 @@ public class GameEntity {
             if(mLastExhaust > mTimeBetweenExhaust) {
                 mLastExhaust -= mTimeBetweenExhaust;
                 float rads = (float)Math.toRadians(mAngle -10 + 20 * mRandom.nextFloat());
-                float vx = (float) (mThrustForce * FastTrig.cos(rads));
-                float vy = (float) (mThrustForce * FastTrig.sin(rads));
+                float vx = (float) (mShip.getThrust() * FastTrig.cos(rads));
+                float vy = (float) (mShip.getThrust() * FastTrig.sin(rads));
                 
                 
                 mWorld.addParticle(new Particle(ShapeCache.SQUARE, Color.white, 500, mPos.x, mPos.y, -vx, -vy, 0, 5, 180 - 360 * mRandom.nextFloat()));
             }
-            applyForce(mThrustForce, mAngle, (delta/1000.0f), false);
+            if(mShip.inertialEngines()) {
+                //set to max speed.
+                float rads = (float)Math.toRadians(mAngle);
+                mVel.x = (float) (mShip.getMaxSpeed() * FastTrig.cos(rads));
+                mVel.y = (float) (mShip.getMaxSpeed() * FastTrig.sin(rads));
+            } else {
+                applyForce(mShip.getThrust(), mAngle, (delta/1000.0f), false);
+            }
             
             mThrust = false;
             mDrawThrust = true;
         } else {
             mLastExhaust = 0;
             mDrawThrust = false;
+            if(mShip.inertialEngines()) {
+                mVel.x = 0;
+                mVel.y = 0;
+            }
         }
         if(mStop) {
             applyForce(-mStoppingForce, (float)mVel.getTheta(), (delta/1000.0f), true);
@@ -302,6 +313,15 @@ public class GameEntity {
             mWeapon.fire(this);
         }
         
+    }
+    public float getHealthPercent() {
+        return mCurHealth / mMaxHealth;
+    }
+    public float getShieldPercent() {
+        return mCurShield / mMaxShield;
+    }
+    public boolean hasShields() {
+        return mMaxShield > 0;
     }
     
 }

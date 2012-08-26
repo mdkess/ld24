@@ -6,7 +6,7 @@ import xxx.rtin.ma.games.World;
 
 public class Blaster extends Weapon {
     public Blaster(World world, int cooldown) {
-        super(world, cooldown);
+        super("Mass Driver", world, cooldown);
     }
 
     @Override

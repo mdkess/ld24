@@ -13,10 +13,14 @@ public class Bullet extends Projectile {
     private int mLife = 3000; //missiles last three seconds.
 
     public Bullet(World world, GameEntity owner) {
-        super(world, new BlasterShip(), owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
+        this(world, owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
+    }
+    
+    public Bullet(World world, GameEntity owner, float x, float y, float angle) {
+        super(world, new BlasterShip(), owner, x, y, angle);
         
         setRadius(5);        
-        float r = (float) Math.toRadians(owner.getAngle());
+        float r = (float) Math.toRadians(angle);
         mVel.x = (float) (mShip.getMaxSpeed() * FastTrig.cos(r));
         mVel.y = (float) (mShip.getMaxSpeed() * FastTrig.sin(r));
     }

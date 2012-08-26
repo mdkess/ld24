@@ -6,15 +6,18 @@ import xxx.rtin.ma.games.World;
 public abstract class Weapon {
     protected final int mTotalCooldown;
     protected World mWorld;
-    protected GameEntity mOwner;
     protected int mCooldown;
     protected boolean mReady = true;
     protected GameEntity mTarget;
+    protected String mName;
     
-    public Weapon(World world, int cooldown) {
+    public String getName() { return mName; }
+    
+    public Weapon(String name, World world, int cooldown) {
         mTotalCooldown = cooldown;
         mWorld = world;
         mCooldown = 0;
+        mName = name;
     }
     
     public void setTarget(GameEntity target) {

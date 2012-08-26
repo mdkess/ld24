@@ -60,7 +60,8 @@ public abstract class AIController {
                 if(distanceToTarget < mSafeDistance) {
                     mState = State.FLEE;
                 }
-            } else if(distanceToTarget < mChargeRange) {
+            //} else if(distanceToTarget < mChargeRange) {
+            } else {
                 mState = State.CHARGE;
             }
             break;

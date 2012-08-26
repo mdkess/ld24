@@ -56,6 +56,9 @@ public class GameEntity {
     protected float mShieldDamageCharge; //The shield "charges" when hit, and slowly drains.
     protected float mShieldChargeDissipateRate;
     
+    protected float mShieldRechargeDelay; //you must not take damage for a certain time to regen shields.
+    protected final float mShieldMaxRechargeDelay = 5000; 
+    
     private float mTimeBetweenExhaust;
     private float mLastExhaust;
     
@@ -81,8 +84,7 @@ public class GameEntity {
         
         mMaxShield = 100;
         mCurShield = 20;
-        mShieldRegen = 0
-                ;
+        mShieldRegen = 10;
         mMaxHealth = 100;
         mCurHealth = 100;
         mHealthRegen = 5;
@@ -95,7 +97,25 @@ public class GameEntity {
         
         mShip = ship;
         mShip.setOwner(this);
-        setWeapon(new MissileLauncher(mWorld, 1000));
+        //setWeapon(new MissileLauncher(mWorld, 1000));
+    }
+    public void setMaxHealth(float health) {
+        mMaxHealth = health;
+        if(mMaxHealth < mCurHealth) {
+            mCurHealth = mMaxHealth;
+        }
+    }
+    public void setMaxShield(float shield) {
+        mMaxShield = shield;
+        if(mMaxShield < mCurShield) {
+            mCurShield = mMaxShield;
+        }
+    }
+    public void setShieldRegen(float regen) {
+        mShieldRegen = regen;
+    }
+    public void setHealthRegen(float regen) {
+        mHealthRegen = regen;
     }
     
     public void setController(AIController controller) {
@@ -103,10 +123,16 @@ public class GameEntity {
     }
     
     private void updateStats(int delta) {
+        mShieldRechargeDelay -= delta;
+        if(mShieldRechargeDelay < 0) {
+            mShieldRechargeDelay = 0;
+        }
         float df = (delta/1000.0f);
-        mCurShield += mShieldRegen * df;
-        if(mCurShield > mMaxShield) {
-            mCurShield = mMaxShield;
+        if(mShieldRechargeDelay == 0) {
+            mCurShield += mShieldRegen * df;
+            if(mCurShield > mMaxShield) {
+                mCurShield = mMaxShield;
+            }
         }
         
         mCurHealth += mHealthRegen * df;
@@ -155,8 +181,25 @@ public class GameEntity {
             mCurHealth -= amount;
             if(mCurHealth < 0) {
                 System.out.println("DEAD");
+                SoundCache.RandomExplosion().play();
+                mWorld.removeEntity(this);
+                //explode
+                for(int i=0; i<10; ++i) {
+                    float rads = (float) ((i * Math.PI * 2) / 10.0f);
+                    float v = 60 * mRandom.nextFloat();
+                    mWorld.addParticle(new Particle(
+                        ShapeCache.SQUARE, Color.red, 1000, mPos.x, mPos.y,
+                            (float)FastTrig.cos(rads) * v + mVel.x, (float)FastTrig.sin(rads) * v + mVel.y, 0,
+                            mRandom.nextFloat() * 9 + 1, 180 - 360 * mRandom.nextFloat()));
+                    mWorld.addParticle(new Particle(
+                            ShapeCache.SQUARE, Color.white, 1000, mPos.x, mPos.y,
+                                (float)FastTrig.cos(rads) * v + mVel.x, (float)FastTrig.sin(rads) * v + mVel.y, 0,
+                                mRandom.nextFloat() * 9 + 1, 180 - 360 * mRandom.nextFloat()));
+                }
+                
             }
         }
+        mShieldRechargeDelay = mShieldMaxRechargeDelay;
         
     }
     
@@ -217,6 +260,8 @@ public class GameEntity {
 
     protected final Random mRandom = new Random();
     public void update(int delta) {
+
+        
         if(mController != null) {
             mController.update(delta);
         }

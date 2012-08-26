@@ -21,4 +21,12 @@ public class StaticUtil {
 
         return new Vector2f(x, y).add(reference.getPos());
     }
+    
+    public static Vector2f RotateVector(Vector2f v, float degrees) {
+        //Slow rotate
+        float length = v.length();
+        float theta = (float)v.getTheta();
+        float rads = (float) Math.toRadians(degrees+theta);
+        return new Vector2f((float)(length * FastTrig.cos(rads)), (float)(length * FastTrig.sin(rads)));
+    }
 }

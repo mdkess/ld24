@@ -8,12 +8,11 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 
 import xxx.rtin.ma.games.ai.AttackAIController;
-import xxx.rtin.ma.games.ships.CircleShip;
+import xxx.rtin.ma.games.ai.StationAIController;
 import xxx.rtin.ma.games.ships.MotherShip;
-import xxx.rtin.ma.games.ships.SquareShip;
 import xxx.rtin.ma.games.ships.TriangleShip;
-import xxx.rtin.ma.games.weapons.Blaster;
 import xxx.rtin.ma.games.weapons.MissileLauncher;
+import xxx.rtin.ma.games.weapons.WeaponBattery;
 
 public class GameMain extends BasicGame {
 
@@ -35,23 +34,51 @@ public class GameMain extends BasicGame {
 	    g.setBackground(StaticConfig.BACKGROUND_COLOR);
 	    g.setAntiAlias(true);
 	    
+	    WeaponBattery b = new WeaponBattery("Blaster Battery", mWorld, 1000);
+	    b.addLauncher(0, -1, -10);
+	    b.addLauncher(0, 0, 0);
+	    b.addLauncher(0, 1, 10);
+	    
+	    mWorld.setPlayer(new PlayerEntity(mWorld, new TriangleShip(), mWorld.getWidth()/2, mWorld.getHeight()/2, 0));
+        mWorld.addEntity(mWorld.getPlayer());
+        //mWorld.getPlayer().giveWeapon(0, new Blaster(mWorld, 500));
+        mWorld.getPlayer().giveWeapon(0, b);
+        mWorld.getPlayer().giveWeapon(1, new MissileLauncher(mWorld, 1000));
+        mWorld.getPlayer().selectWeapon(0);
+        
+        //The player must defend the mothership
+        /*
+        GameEntity mothership = new GameEntity(mWorld, new MotherShip(), 8000, 6000, 45);
+        mothership.setRadius(100);
+        mWorld.addEntity(mothership);
+        mothership.setController(new StationAIController(mothership));
+        */
+        
+        //playIntro();
+        
+        createWaves();
+        
+	    /*
 	    mWorld.setPlayer(new PlayerEntity(mWorld, new TriangleShip(), 400, 300, 0));
 	    mWorld.addEntity(mWorld.getPlayer());
+	    mWorld.getPlayer().giveWeapon(0, new Blaster(mWorld, 500));
+	    mWorld.getPlayer().giveWeapon(1, new MissileLauncher(mWorld, 1000));
+	    mWorld.getPlayer().selectWeapon(0);
 	    GameEntity t = new GameEntity(mWorld, new TriangleShip(), 200, 200, 45);
 	    mWorld.getPlayer().setTarget(t);
 	    mWorld.addEntity(t);
-	    t.setController(new AttackAIController(t));
+	    //t.setController(new AttackAIController(t));
 	    t.setWeapon(new Blaster(mWorld, 500));
 	    
 	    GameEntity s = new GameEntity(mWorld, new SquareShip(), 300, 300, 45);
 	    mWorld.addEntity(s);
-	    s.setController(new AttackAIController(s));
+	    //s.setController(new AttackAIController(s));
 	    s.setWeapon(new MissileLauncher(mWorld, 1000));
 	    s.setTarget(mWorld.getPlayer());
 	    
 	    GameEntity c = new GameEntity(mWorld, new CircleShip(), 400, 400, 45);
 	    mWorld.addEntity(c);
-	    c.setController(new AttackAIController(c));
+	    //c.setController(new AttackAIController(c));
         c.setWeapon(new Blaster(mWorld, 500));
         c.setTarget(mWorld.getPlayer());
         
@@ -59,10 +86,42 @@ public class GameMain extends BasicGame {
 	    GameEntity mothership = new GameEntity(mWorld, new MotherShip(), 400, 100, 45);
 	    mothership.setRadius(100);
 	    mWorld.addEntity(mothership);
+	    */
+	    
+	}
+	private void playIntro() {
+	    mWorld.toast("", 1000);
+	    mWorld.toast("Martin Kess proudly presents.", 3000);
+	    mWorld.toast("A game for Ludum Dare 24", 3000);
+	    mWorld.toast("", 1000);
+	    mWorld.toast("[kinetic dream]", 4000, SoundCache.INTRO);
+	    mWorld.toast("", 1000);
+	    mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Weapons: 1-9 Target: E Help: H", 4000);
+	    mWorld.toast("", 1000);
+	    mWorld.toast("defend the bioforge", 5000);
+	}
+
+	private void createWaves() {
+	    Wave w1 = new Wave("1. New Ideas", 0);
+	    for(int i=0; i < 10; ++i) {
+	        GameEntity e = new GameEntity(mWorld, new TriangleShip(), 100*i, 0, 0);
+	        e.setMaxHealth(10);
+	        e.setMaxShield(20);
+	        e.setHealthRegen(1);
+	        e.setShieldRegen(1);
+	        
+	        e.setController(new AttackAIController(e));
+	        e.setTarget(mWorld.getPlayer());
+	        
+	        w1.addEnemy(0, e);
+	    }
+	    mWorld.addWave(w1);
+	    
+	    //Wave w2 = new Wave("2. Sleepless Mind", 10000);
 	    
 	    
 	}
-
+	
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 	    if(!SoundCache.SONG1.playing()) {
@@ -94,12 +153,21 @@ public class GameMain extends BasicGame {
         if(input.isKeyPressed(Input.KEY_E)) {
             player.retarget();
         }
+        if(input.isKeyPressed(Input.KEY_H)) {
+            mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Target: E Help: H", 1000);
+        }
         //TODO not new each time.
         //TODO wpn stats
         if(input.isKeyPressed(Input.KEY_1)) {
-            player.setWeapon(new MissileLauncher(mWorld, 1000));
+            if(player.getWeaponIndex() != 0) {
+                SoundCache.WEAPON_SELECT.play();
+                player.selectWeapon(0);
+            }
         } else if(input.isKeyPressed(Input.KEY_2)){
-            player.setWeapon(new Blaster(mWorld, 500));
+            if(player.getWeaponIndex() != 1) {
+                SoundCache.WEAPON_SELECT.play();
+                player.selectWeapon(1);
+            }
         }
         
 
@@ -109,7 +177,7 @@ public class GameMain extends BasicGame {
 	
 	
 	public static void main(String[] args) throws SlickException {
-		AppGameContainer app = new AppGameContainer(new GameMain("LD24 - S'lar!"));
+		AppGameContainer app = new AppGameContainer(new GameMain("[kinetic dream]"));
 		//app.setVSync(true);
 		app.setDisplayMode(800, 600, false);
 		app.start();

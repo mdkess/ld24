@@ -7,12 +7,14 @@ import xxx.rtin.ma.games.World;
 
 public class MissileLauncher extends Weapon {
     public MissileLauncher(World world, int cooldown) {
-        super(world, cooldown);
+        super("Missile Launcher", world, cooldown);
     }
 
     @Override
     protected boolean fireWeapon(GameEntity owner) {
-        if(!hasTarget()) { return false; }
+        if(!hasTarget()) {
+            return false;
+        }
         SoundCache.MISSILE_FIRE.play();
         mWorld.addProjectile(new Missile(mWorld, owner, getTarget()));
         return true;

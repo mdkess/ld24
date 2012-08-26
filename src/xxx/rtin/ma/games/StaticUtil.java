@@ -5,10 +5,25 @@ import org.newdawn.slick.util.FastTrig;
 
 public class StaticUtil {
     public static float AngleBetween(float angle1, float angle2) {
-
+        while(angle1 < 0) {
+            angle1 += 360;
+        }
+        while(angle2 < 0) {
+            angle2 += 360;
+        }
+        while(angle1 > 360) {
+            angle1 -= 360;
+        }
+        while(angle2 > 360) {
+            angle2 -= 360;
+        }
+        
         float difference = (angle2 - angle1) % 360;
         if(difference > 180) {
-            difference = difference - 360;
+            difference -= 360;
+        }
+        if(difference < -180) {
+            difference += 360;
         }
         return difference;
     }

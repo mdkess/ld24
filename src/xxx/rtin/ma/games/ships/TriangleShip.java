@@ -18,7 +18,7 @@ public class TriangleShip extends Ship {
     }
     
     public TriangleShip(float speedPct) {
-        super(180, 200*speedPct, 200);
+        super("Fighter", 180, 200*speedPct, 200);
     }
     
     @Override

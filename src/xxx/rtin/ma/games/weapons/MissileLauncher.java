@@ -16,7 +16,7 @@ public class MissileLauncher extends Weapon {
             return false;
         }
         SoundCache.MISSILE_FIRE.play();
-        mWorld.addProjectile(new Missile(mWorld, owner, getTarget(), mDamage));
+        mWorld.addProjectile(new Missile(mWorld, owner, getTarget(), mDamage * owner.getDamageMultiplier()));
         return true;
     }
 }

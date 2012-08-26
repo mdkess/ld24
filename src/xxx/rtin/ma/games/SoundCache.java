@@ -15,6 +15,8 @@ public class SoundCache {
     public static Sound PLAYER_LEVELUP;
     public static Sound WEAPON_SELECT;
     public static Sound INTRO;
+    public static Sound RESPAWN;
+    public static Sound GAMEOVER;
     public static Sound[] EXPLOSIONS;
     public static Music SONG1;
     
@@ -35,7 +37,8 @@ public class SoundCache {
             INTRO = new Sound("res/intro.wav");
             PLAYER_LEVELUP = new Sound("res/player_levelup.wav");
             SONG1 = new Music("res/song1.wav");
-            
+            RESPAWN = new Sound("res/respawn.wav");
+            GAMEOVER = new Sound("res/gameover.wav");
             EXPLOSIONS = new Sound[] {
                 new Sound("res/explosion1.wav"),
                 new Sound("res/explosion2.wav"),

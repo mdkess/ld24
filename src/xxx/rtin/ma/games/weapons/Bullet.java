@@ -13,11 +13,11 @@ import xxx.rtin.ma.games.ships.BlasterShip;
 public class Bullet extends Projectile {
     private int mLife = 3000; //missiles last three seconds.
 
-    public Bullet(World world, GameEntity owner, int damage) {
+    public Bullet(World world, GameEntity owner, float damage) {
         this(world, owner, owner.getPos().x, owner.getPos().y, owner.getAngle(), damage);
     }
     
-    public Bullet(World world, GameEntity owner, float x, float y, float angle, int damage) {
+    public Bullet(World world, GameEntity owner, float x, float y, float angle, float damage) {
         super(world, new BlasterShip(), owner, x, y, angle, damage);
         
         setRadius(5);        

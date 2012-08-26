@@ -12,7 +12,7 @@ public class MotherShip extends Ship {
     Turret[] mTurrets = new Turret[4];
     
     public MotherShip() {
-        super(25, 0, 0);
+        super("Station", 25, 0, 0);
     }
     
     //hax!

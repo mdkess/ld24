@@ -15,7 +15,7 @@ public class SquareShip extends Ship {
     }
     
     public SquareShip(float speedPct) {
-        super(100, 100 * speedPct, 100);
+        super("Bomber", 100, 100 * speedPct, 100);
     }
     
     @Override

@@ -12,7 +12,7 @@ public class Blaster extends Weapon {
     @Override
     protected boolean fireWeapon(GameEntity owner) {
         SoundCache.LASER_FIRE.play();
-        mWorld.addProjectile(new Bullet(mWorld, owner, mDamage));
+        mWorld.addProjectile(new Bullet(mWorld, owner, mDamage * owner.getDamageMultiplier()));
         return true;
     }
 

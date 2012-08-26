@@ -9,7 +9,7 @@ import xxx.rtin.ma.games.StaticConfig;
 public class MissileShip extends Ship {
 
     public MissileShip() {
-        super(90, 300, 150);
+        super("Missile", 90, 300, 150);
 
     }
     

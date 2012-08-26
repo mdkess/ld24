@@ -56,7 +56,7 @@ public class World {
     Random      mRandom = new Random();
     Debris[]    mDebris;
     private int mWidth  = 4000;
-    private int mHeight = 3000;
+    private int mHeight = 4000;
 
     public int getHeight() {
         return mHeight;
@@ -76,6 +76,7 @@ public class World {
         }
     }
 
+    
     private String mToastMessage;
     private int    mToastDuration = 0;
 
@@ -95,13 +96,21 @@ public class World {
 
     private List<Toast> mToasts = new LinkedList<Toast>();
 
-    public void toast(String message, int duration) {
-        mToasts.add(new Toast(message, duration, null));
+    public void toast(String message, int duration, boolean front, Sound sound) {
+        if(front) {
+            mToasts.add(0, new Toast(message, duration, sound));
+        } else {
+            mToasts.add(new Toast(message, duration, sound));
+        }
     }
 
+    public void toast(String message, int duration) {
+        toast(message, duration, false, null);
+    }
+/*
     public void toast(String message, int duration, Sound sound) {
         mToasts.add(new Toast(message, duration, sound));
-    }
+    }*/
 
     private PlayerEntity mPlayer;
     private GameEntity mStation;
@@ -110,6 +119,10 @@ public class World {
         mStation = station;
     }
 
+    public GameEntity getStation() {
+        return mStation;
+    }
+    
     public PlayerEntity getPlayer() {
         return mPlayer;
     }
@@ -134,9 +147,12 @@ public class World {
 
     public void removeEntity(GameEntity entity) {
         if (entity == mPlayer) {
-            toast("you are slain...", 2000);
-            toast("...but you will live again", 2000);
-            mPlayer.setDeathCounter(5000);
+            toast("resequencing...", 1000, true, null);
+            toast("you are replaceable", 2000, true, null);
+            mPlayer.setDeathCounter(3000);
+        } else if(entity == mStation) {
+            SoundCache.GAMEOVER.play();
+            gameOver("the station is destroyed. hope is lost", 5000);
         } else {
             mEntitiesToRemove.add(entity);
             if (mPlayer.getTarget() == entity) {
@@ -178,13 +194,46 @@ public class World {
         return mPaused;
     }
     
+    boolean mGameOver = false;
+    String  mGameOverMessage ="";
+    public void gameOver(String message, int delay) {
+        if(delay == 0) delay = 1;
+        mGameOverCounter = delay;
+        mGameOverMessage = message;
+    }
+    public void gameOver() {
+        mGameOver = true;
+        if(SoundCache.SONG1.playing()) {
+            SoundCache.SONG1.stop();
+        }
+        SoundCache.GAMEOVER.play();
+    }
+    public boolean isGameOver() { return mGameOver; }
+    
+    private int mGameOverCounter = 0; 
+    private void updateGameOver(int delta) {
+        if(mGameOverCounter != 0) {
+            mGameOverCounter -= delta;
+            if(mGameOverCounter <= 0) {
+                gameOver();
+            }
+        }
+    }
+    
     public void update(int delta) {
+        updateGameOver(delta);
         if(mPaused) { return; }
+        if(mGameOver) { return; }
         if (!mWaves.isEmpty()) {
             mWaves.get(0).update(delta);
             if (mWaves.get(0).isDone() && mEntities.size() <= 2) { //hax - player + mothership
                 mWaves.remove(0);
             }
+        } else {
+            gameOver("you awake from the dream. congratulations, you have won", 5000);
+        }
+        if(!SoundCache.SONG1.playing()) {
+            SoundCache.SONG1.play();
         }
 
         mEntities.removeAll(mEntitiesToRemove);
@@ -229,6 +278,8 @@ public class World {
             }
         }
     }
+    
+    private static final Color STATION_HOME_COLOR = new Color(1.0f, 0.5f, 0.7f, 0.1f);
 
     public void render(Graphics g) {
         g.pushTransform();
@@ -256,21 +307,33 @@ public class World {
         mPlayer.drawTarget(g);
         //Draw line to base
         if(mStation != null) {
-            g.setColor(Color.pink);
+            g.setColor(STATION_HOME_COLOR);
             g.drawLine(mPlayer.getPos().x, mPlayer.getPos().y, mStation.getPos().x, mStation.getPos().y);
         }
         g.popTransform();
         drawHUD(g);
         
         if(mPaused) {
+            g.setColor(Color.black);
+            g.drawString(mPauseMessage, 399 - mPauseMessage.length()*4, 199);
             g.setColor(Color.white);
             g.drawString(mPauseMessage, 400 - mPauseMessage.length()*4, 200);
+        } else if(mGameOver) {
+            g.setColor(Color.black);
+            g.drawString("[the end?]", 399 - 10*4, 179);
+            g.drawString(mGameOverMessage, 399- mGameOverMessage.length()*4, 199);
+            g.setColor(Color.white);
+            g.drawString("[the end?]", 400 - 10*4, 180);
+            g.drawString(mGameOverMessage, 400 - mGameOverMessage.length()*4, 200);
+            
+            String quitMessage = "(press Q or ESC to wake up)";
+            g.setColor(Color.black);
+            g.drawString(quitMessage, 399 - quitMessage.length()*4, 399);
+            g.setColor(Color.white);
+            g.drawString(quitMessage, 400 - quitMessage.length()*4, 400);
         } else {
             drawToast(g);
         }
-        
-            
-        
     }
 
     private void drawToast(Graphics g) {
@@ -297,7 +360,7 @@ public class World {
                                                        0.5f);
     private static Color HEALTH_COLOR          = new Color(1.0f, 0.4f, 0.4f,
                                                        0.5f);
-    private static Color SHIELD_COLOR          = new Color(0.4f, 0.4f, 1.0f,
+    private static Color SHIELD_COLOR          = new Color(0.6f, 0.6f, 1.0f,
                                                        0.5f);
     private static Color WEAPON_COOLDOWN_COLOR = new Color(0.8f, 0.8f, 0.2f,
                                                        0.5f);
@@ -319,7 +382,7 @@ public class World {
             ship.render(g, false);
             g.popTransform();
             g.setColor(Color.white);
-            g.drawString(target.getClass().getSimpleName(), 690, 10);
+            g.drawString(target.getShip().getName(), 690, 10);
             g.setColor(HUD_COLOR2);
 
             // Draw health
@@ -377,16 +440,59 @@ public class World {
         g.drawString("H: " + (int) mPlayer.getTotalHealth(), 720, 400);
         g.drawString("S: " + (int) mPlayer.getTotalShield(), 720, 415);
         g.drawString("L: " + (int) mPlayer.getLevel(), 720, 430);
-
-        for (int i = 0; i < 2; ++i) {
+        
+        int n = mPlayer.getNumWeapons();
+        int y0 = 580 - 15 * n;
+        for (int i = 0; i < n ; ++i) {
             String text = mPlayer.getWeapon(i).getName();
             if (mPlayer.getWeaponIndex() == i) {
-                g.drawString("*" + (i + 1) + ". " + text, 10, 550 + 15 * i);
+                g.drawString("*" + (i + 1) + ". " + text, 10, y0 + 15 * i);
             } else {
-                g.drawString(" " + (i + 1) + ". " + text, 10, 550 + 15 * i);
+                g.drawString(" " + (i + 1) + ". " + text, 10, y0 + 15 * i);
             }
         }
+        drawStarMap(g);
+    }
+    
+    private void drawStarMap(Graphics g) {
+        //Draw a mini map in the top left
+        g.setColor(HUD_COLOR1);
+        g.fillRect(0, 0, 200, 200);
+        
+        //Draw enemies
+        g.setColor(Color.red);
+        for(GameEntity entity : mEntities) {
+            float x = entity.getPos().x;
+            float y = entity.getPos().y;
+            if(x >= 0 && x <= mWidth && y >= 0 && y <= mWidth) {
+                if(entity.getRadius() > 50) {
+                    g.fillOval(200*(x/4000)-2, 200*(y/4000)-2, 8, 8);
 
+                } else {
+                    g.fillRect(200*(x/4000), 200*(y/4000), 2, 2);
+                }
+            }
+        }
+        //draw player
+        {
+            g.setColor(Color.green);
+            float x = mPlayer.getPos().x;
+            float y = mPlayer.getPos().y;
+            if(x >= 0 && x <= mWidth && y >= 0 && y <= mWidth) {
+                g.fillRect(200*(x/4000), 200*(y/4000), 2, 2);
+            }
+        }
+        //draw station
+        if(mStation != null) {
+            g.setColor(Color.pink);
+            float x = mStation.getPos().x;
+            float y = mStation.getPos().y;
+            if(x >= 0 && x <= mWidth && y >= 0 && y <= mWidth) {
+                g.fillOval(200*(x/4000)-2, 200*(y/4000)-2, 8, 8);
+            }
+        }
+        
+        
     }
 
     public GameEntity getNearestEnemy(GameEntity src) {

@@ -16,4 +16,4 @@ Wolfram Alpha's music generator: http://tones.wolfram.com/generate/
  Switch Weapon: 1-9
  Help: H
  Pause: P
-
+ Quit: Q/Escape

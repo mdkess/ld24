@@ -38,6 +38,9 @@ public abstract class Weapon {
 
                 mCooldown = mTotalCooldown;
                 mReady = false;
+            } else {
+                //hax -- rocket launcher needs a target, so give it a target
+                owner.retarget();
             }
         }
     }

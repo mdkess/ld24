@@ -17,18 +17,16 @@ import xxx.rtin.ma.games.ships.MissileShip;
 
 public class Missile extends Projectile {
        
-    private GameEntity mOwner;
     private GameEntity mTarget;
     
-    private int mLife = 3000; //missiles last three seconds.
+    private int mLife = 4000; //missiles last four seconds.
     
-    public Missile(World world, GameEntity owner, GameEntity target, int damage) {
+    public Missile(World world, GameEntity owner, GameEntity target, float damage) {
         this(world, owner, target, owner.getPos().x, owner.getPos().y, owner.getAngle(), damage);
     }
-    public Missile(World world, GameEntity owner, GameEntity target, float x, float y, float angle, int damage) {
+    public Missile(World world, GameEntity owner, GameEntity target, float x, float y, float angle, float damage) {
         super(world, new MissileShip(), owner, x, y, angle, damage);
 
-        mOwner = owner;
         mTarget = target;
         
 
@@ -44,6 +42,9 @@ public class Missile extends Projectile {
     public void update(int delta) {
         setThrust();
         
+        if(!mTarget.isAlive()) {
+            retarget();
+        }
         
         //The goal of the missile is to make its velocity vector point at the target. It does this by overshooting the target
         Vector2f toTarget = new Vector2f(mTarget.getPos()).sub(mPos);

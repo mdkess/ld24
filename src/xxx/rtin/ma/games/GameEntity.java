@@ -27,15 +27,22 @@ public class GameEntity {
     private Contrail mContrail;
     
     public boolean hasTarget() { return mWeapon != null && mWeapon.hasTarget(); }
+    public boolean targetInRange(float range2) {
+        if(hasTarget()) {
+            return (mWeapon.getTarget().getPos().distanceSquared(mPos) < range2);
+        }
+        return false;
+    }
     public void setTarget(GameEntity target) {
         if(mWeapon != null) {
             mWeapon.setTarget(target);
         }
     }
     
+    
     public float getRadius() { return mRadius; }
     public float getHitRadius() {
-        if(mCurShield > 0) {
+        if(mRadius < 50 || mCurShield > 0) {
             return 2*mRadius;
         } else {
             return mRadius;
@@ -69,6 +76,14 @@ public class GameEntity {
     
     public Ship getShip() { return mShip; }
     
+    protected float mDamageMultiplier = 1.0f;
+    public float getDamageMultiplier() {
+        return mDamageMultiplier;
+    }
+    public void setDamageMultiplier(float multiplier) {
+        mDamageMultiplier = multiplier;
+    }
+    
     protected AIController mController;
     
     public GameEntity(World world, Ship ship, float x, float y, float angle) {
@@ -101,15 +116,11 @@ public class GameEntity {
     }
     public void setMaxHealth(float health) {
         mMaxHealth = health;
-        if(mMaxHealth < mCurHealth) {
-            mCurHealth = mMaxHealth;
-        }
+        mCurHealth = mMaxHealth;
     }
     public void setMaxShield(float shield) {
         mMaxShield = shield;
-        if(mMaxShield < mCurShield) {
-            mCurShield = mMaxShield;
-        }
+        mCurShield = mMaxShield;
     }
     public void setShieldRegen(float regen) {
         mShieldRegen = regen;
@@ -172,9 +183,23 @@ public class GameEntity {
         return mAngle;
     }
     
-    public void damage(int amount) {
+    private int mCoinCount = 0;
+    public void setCoinCount(int c) {
+        mCoinCount = c;
+    }
+    public void retarget() {
+        GameEntity target = mWorld.getNearestEnemy(this);
+        setTarget(target);
+    }
+
+    protected boolean mDead = false;
+    public void damage(float amount) {
+        
+        if(mDead) return;
+        
         System.out.println("BAM! " + amount + " damage!");
         mShieldDamageCharge += amount;
+        
         
         //shield blocks all damage
         if(mCurShield > 0) {
@@ -185,7 +210,7 @@ public class GameEntity {
         } else {
             mCurHealth -= amount;
             if(mCurHealth < 0) {
-                System.out.println("DEAD");
+                mDead = true;
                 SoundCache.RandomExplosion().play();
                 mWorld.removeEntity(this);
                 //explode
@@ -200,6 +225,17 @@ public class GameEntity {
                             ShapeCache.SQUARE, Color.white, 1000, mPos.x, mPos.y,
                                 (float)FastTrig.cos(rads) * v + mVel.x, (float)FastTrig.sin(rads) * v + mVel.y, 0,
                                 mRandom.nextFloat() * 9 + 1, 180 - 360 * mRandom.nextFloat()));
+                }
+                //coins!
+                for(int i=0; i < mCoinCount; ++i) {
+                    float angle = mRandom.nextFloat() * 360.0f;
+                    float rads = (float) Math.toRadians(angle);
+                    float v = mRandom.nextFloat() * 100;
+                    mWorld.addCoin(
+                            new Coin(
+                                    ShapeCache.SQUARE, mPos.x, mPos.y,
+                                    (float)FastTrig.cos(rads) * v, (float)FastTrig.sin(rads) * v, 100,
+                                    180 - 360 * mRandom.nextFloat()));
                 }
                 
             }
@@ -232,6 +268,7 @@ public class GameEntity {
         if(targetAngle < 0) targetAngle += 360;
         float difference = StaticUtil.AngleBetween(mAngle, targetAngle);
         float maxTurn = (delta/1000.0f) * mShip.getTurnRate();
+
         if(Math.abs(difference) <= maxTurn) {
             mAngle = targetAngle;
         } else if(difference > 0) {
@@ -374,8 +411,10 @@ public class GameEntity {
         return mMaxShield > 0;
     }
     public boolean canFire() {
-        // TODO Auto-generated method stub
         return mWeapon != null && mWeapon.getCooldown() == 0;
+    }
+    public boolean isAlive() {
+        return mDead == false;
     }
     
 }

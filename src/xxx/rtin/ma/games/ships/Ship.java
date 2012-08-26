@@ -10,11 +10,14 @@ public abstract class Ship {
     private float mTurnRate;
     private float mMaxSpeed;
     private float mThrust;
-    public Ship(float turnRate, float maxSpeed, float thrust) {
+    private String mName;
+    public Ship(String name, float turnRate, float maxSpeed, float thrust) {
         mTurnRate = turnRate;
         mMaxSpeed = maxSpeed;
         mThrust = thrust;
+        mName = name;
     }
+    public String getName() { return mName; }
     public float getTurnRate() { return mTurnRate; }
     public float getMaxSpeed() { return mMaxSpeed; }
     public float getThrust() { return mThrust; }

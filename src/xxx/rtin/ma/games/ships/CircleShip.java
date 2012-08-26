@@ -7,7 +7,7 @@ import xxx.rtin.ma.games.StaticConfig;
 public class CircleShip extends Ship {
 
     public CircleShip(float speedPct) {
-        super(360, 100 * speedPct, 100);
+        super("Saucer", 360, 150 * speedPct, 100);
     }
     @Override
     public void render(Graphics g, boolean thrust) {

@@ -11,9 +11,9 @@ import xxx.rtin.ma.games.ships.Ship;
 public abstract class Projectile extends GameEntity {
 
     private GameEntity mOwner;
-    private int mDamage;
+    private float mDamage;
     
-    public Projectile(World world, Ship ship, GameEntity owner, float x, float y, float angle, int damage) {
+    public Projectile(World world, Ship ship, GameEntity owner, float x, float y, float angle, float damage) {
         super(world, ship, x, y, angle);
         mOwner = owner;
         mDamage = damage;
@@ -47,16 +47,7 @@ public abstract class Projectile extends GameEntity {
                             (float)FastTrig.cos(rads) * v, (float)FastTrig.sin(rads) * v, 0,
                             r.nextFloat() * 9 + 1, 180 - 360 * r.nextFloat()));
         }
-        for(int i=0; i < 3; ++i) {
-            float angle = targetAngle - variance + 2*variance * r.nextFloat();
-            float rads = (float) Math.toRadians(angle);
-            float v = r.nextFloat() * 100;
-            mWorld.addCoin(
-                    new Coin(
-                            ShapeCache.SQUARE, mPos.x, mPos.y,
-                            (float)FastTrig.cos(rads) * v, (float)FastTrig.sin(rads) * v, 100,
-                            180 - 360 * r.nextFloat()));
-        }
+
         
         //Explode!
         //Add some particles.

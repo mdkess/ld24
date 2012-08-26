@@ -194,12 +194,16 @@ public class World {
         return mPaused;
     }
     
+    boolean mWaitingForGameOver = false;
     boolean mGameOver = false;
     String  mGameOverMessage ="";
     public void gameOver(String message, int delay) {
-        if(delay == 0) delay = 1;
-        mGameOverCounter = delay;
-        mGameOverMessage = message;
+        if(!mWaitingForGameOver) {
+            mWaitingForGameOver = true;
+            if(delay == 0) delay = 1;
+            mGameOverCounter = delay;
+            mGameOverMessage = message;
+        }
     }
     public void gameOver() {
         mGameOver = true;
@@ -212,7 +216,7 @@ public class World {
     
     private int mGameOverCounter = 0; 
     private void updateGameOver(int delta) {
-        if(mGameOverCounter != 0) {
+        if(mWaitingForGameOver) {
             mGameOverCounter -= delta;
             if(mGameOverCounter <= 0) {
                 gameOver();
@@ -221,15 +225,15 @@ public class World {
     }
     
     public void update(int delta) {
-        updateGameOver(delta);
         if(mPaused) { return; }
         if(mGameOver) { return; }
+        updateGameOver(delta);
         if (!mWaves.isEmpty()) {
             mWaves.get(0).update(delta);
             if (mWaves.get(0).isDone() && mEntities.size() <= 2) { //hax - player + mothership
                 mWaves.remove(0);
             }
-        } else {
+        } else if(!mWaitingForGameOver) {
             gameOver("you awake from the dream. congratulations, you have won", 5000);
         }
         if(!SoundCache.SONG1.playing()) {

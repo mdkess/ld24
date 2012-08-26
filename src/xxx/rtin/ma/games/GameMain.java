@@ -290,8 +290,8 @@ public class GameMain extends BasicGame {
         battery.addLauncher( 1, 0, 0);
         
         mothership.setDamageMultiplier(damageFactor[5]);
-        mothership.setMaxHealth(5000);
-        mothership.setMaxShield(5000);
+        mothership.setMaxHealth(2500);
+        mothership.setMaxShield(2500);
         mothership.setWeapon(battery);
         mothership.setController(new StationAIController(mothership));
         waves[5].addEnemy(0, mothership);

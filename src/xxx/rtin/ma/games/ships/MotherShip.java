@@ -19,10 +19,10 @@ public class MotherShip extends Ship {
     @Override
     public void setOwner(GameEntity owner) {
         super.setOwner(owner);
-        mTurrets[0] = new Turret(this, 0, 1, 200, new MissileLauncher(World.GetInstance(), 1000));
-        mTurrets[1] = new Turret(this, 1, 0, 200, new MissileLauncher(World.GetInstance(), 1000));
-        mTurrets[2] = new Turret(this, 0, -1, 200, new MissileLauncher(World.GetInstance(), 1000));
-        mTurrets[3] = new Turret(this, -1, 0, 200, new MissileLauncher(World.GetInstance(), 1000));
+        mTurrets[0] = new Turret(this, 0, 1, 200, new MissileLauncher(World.GetInstance(), 3000, 10));
+        mTurrets[1] = new Turret(this, 1, 0, 200, new MissileLauncher(World.GetInstance(), 3000, 10));
+        mTurrets[2] = new Turret(this, 0, -1, 200, new MissileLauncher(World.GetInstance(), 3000, 10));
+        mTurrets[3] = new Turret(this, -1, 0, 200, new MissileLauncher(World.GetInstance(), 3000, 10));
     }
 
     @Override

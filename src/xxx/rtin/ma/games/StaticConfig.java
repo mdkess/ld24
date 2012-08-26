@@ -19,7 +19,8 @@ public final class StaticConfig {
     //public static final Color LIGHTNING_COLOR;
     public static final int COIN_LIFE = 30000;
     public static final float COIN_SIZE = 5;
-    
+    public static final float ROCKET_DAMAGE = 20;
+    public static final float BLASTER_DAMAGE = 5;
     static {
         BACKGROUND_COLOR = new Color(50f/255f, 50f/255f, 100f/255f);
         SHIP_OUTER_COLOR = new Color(0.9f, 0.9f, 1.0f);

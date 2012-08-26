@@ -22,8 +22,11 @@ public class Missile extends Projectile {
     
     private int mLife = 3000; //missiles last three seconds.
     
-    public Missile(World world, GameEntity owner, GameEntity target) {
-        super(world, new MissileShip(), owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
+    public Missile(World world, GameEntity owner, GameEntity target, int damage) {
+        this(world, owner, target, owner.getPos().x, owner.getPos().y, owner.getAngle(), damage);
+    }
+    public Missile(World world, GameEntity owner, GameEntity target, float x, float y, float angle, int damage) {
+        super(world, new MissileShip(), owner, x, y, angle, damage);
 
         mOwner = owner;
         mTarget = target;

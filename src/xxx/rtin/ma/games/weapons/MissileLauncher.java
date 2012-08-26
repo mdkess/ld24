@@ -6,8 +6,8 @@ import xxx.rtin.ma.games.World;
 
 
 public class MissileLauncher extends Weapon {
-    public MissileLauncher(World world, int cooldown) {
-        super("Missile Launcher", world, cooldown);
+    public MissileLauncher(World world, int cooldown, int damage) {
+        super("Missile Launcher", world, cooldown, damage);
     }
 
     @Override
@@ -16,7 +16,7 @@ public class MissileLauncher extends Weapon {
             return false;
         }
         SoundCache.MISSILE_FIRE.play();
-        mWorld.addProjectile(new Missile(mWorld, owner, getTarget()));
+        mWorld.addProjectile(new Missile(mWorld, owner, getTarget(), mDamage));
         return true;
     }
 }

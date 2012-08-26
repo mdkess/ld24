@@ -149,9 +149,14 @@ public class GameEntity {
         return mCurShield > 0;
     }
 
+    private int mTeam = 0;
     public int getTeam() {
-        return 1;
+        return mTeam;
     }
+    public void setTeam(int team) {
+        mTeam = team;
+    }
+    
     
     public void onCollision(GameEntity other) {
         
@@ -367,6 +372,10 @@ public class GameEntity {
     }
     public boolean hasShields() {
         return mMaxShield > 0;
+    }
+    public boolean canFire() {
+        // TODO Auto-generated method stub
+        return mWeapon != null && mWeapon.getCooldown() == 0;
     }
     
 }

@@ -14,8 +14,8 @@ public class SquareShip extends Ship {
         sInnerSquare = new Polygon(new float[] { -0.75f, -0.75f, 0.5f, -0.75f, 0.5f, 0.5f, -0.75f, 0.5f});
     }
     
-    public SquareShip() {
-        super(100, 100, 100);
+    public SquareShip(float speedPct) {
+        super(100, 100 * speedPct, 100);
     }
     
     @Override

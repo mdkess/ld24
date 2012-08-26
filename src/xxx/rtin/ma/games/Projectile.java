@@ -11,10 +11,12 @@ import xxx.rtin.ma.games.ships.Ship;
 public abstract class Projectile extends GameEntity {
 
     private GameEntity mOwner;
+    private int mDamage;
     
-    public Projectile(World world, Ship ship, GameEntity owner, float x, float y, float angle) {
+    public Projectile(World world, Ship ship, GameEntity owner, float x, float y, float angle, int damage) {
         super(world, ship, x, y, angle);
         mOwner = owner;
+        mDamage = damage;
     }
     Random r = new Random();
     @Override
@@ -61,6 +63,6 @@ public abstract class Projectile extends GameEntity {
         
         //Remove self.
         mWorld.removeProjectile(this);
-        other.damage(10);
+        other.damage(mDamage);
     }
 }

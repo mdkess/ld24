@@ -10,14 +10,16 @@ public abstract class Weapon {
     protected boolean mReady = true;
     protected GameEntity mTarget;
     protected String mName;
+    protected int mDamage;
     
     public String getName() { return mName; }
     
-    public Weapon(String name, World world, int cooldown) {
+    public Weapon(String name, World world, int cooldown, int damage) {
         mTotalCooldown = cooldown;
         mWorld = world;
         mCooldown = 0;
         mName = name;
+        mDamage = damage;
     }
     
     public void setTarget(GameEntity target) {

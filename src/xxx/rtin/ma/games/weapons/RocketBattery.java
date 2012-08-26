@@ -10,10 +10,9 @@ import xxx.rtin.ma.games.SoundCache;
 import xxx.rtin.ma.games.StaticUtil;
 import xxx.rtin.ma.games.World;
 
-//ignores underlying cooldown
-public class WeaponBattery extends Weapon {
+public class RocketBattery extends Weapon {
 
-    public WeaponBattery(String name, World world, int cooldown, int damage) {
+    public RocketBattery(String name, World world, int cooldown, int damage) {
         super(name, world, cooldown, damage);
     }
 
@@ -31,13 +30,14 @@ public class WeaponBattery extends Weapon {
     
     @Override
     protected boolean fireWeapon(GameEntity owner) {
-        SoundCache.LASER_FIRE.play();
+        if(mTarget == null) { return false; }
+        SoundCache.MISSILE_FIRE.play();
 
         for(Offset offset : mOffset) {
             Vector2f p = StaticUtil.RotateVector(offset.pos, owner.getAngle()).scale(owner.getRadius()).add(owner.getPos());
-            mWorld.addProjectile(new Bullet(mWorld, owner, p.x, p.y, owner.getAngle() + offset.angle, mDamage));
+            mWorld.addProjectile(new Missile(mWorld, owner, getTarget(),p.x, p.y, owner.getAngle() + offset.angle, mDamage));
+
         }
         return true;
     }
-
 }

@@ -5,6 +5,7 @@ import org.newdawn.slick.util.FastTrig;
 
 import xxx.rtin.ma.games.GameEntity;
 import xxx.rtin.ma.games.Projectile;
+import xxx.rtin.ma.games.StaticConfig;
 import xxx.rtin.ma.games.World;
 import xxx.rtin.ma.games.ships.BlasterShip;
 
@@ -12,12 +13,12 @@ import xxx.rtin.ma.games.ships.BlasterShip;
 public class Bullet extends Projectile {
     private int mLife = 3000; //missiles last three seconds.
 
-    public Bullet(World world, GameEntity owner) {
-        this(world, owner, owner.getPos().x, owner.getPos().y, owner.getAngle());
+    public Bullet(World world, GameEntity owner, int damage) {
+        this(world, owner, owner.getPos().x, owner.getPos().y, owner.getAngle(), damage);
     }
     
-    public Bullet(World world, GameEntity owner, float x, float y, float angle) {
-        super(world, new BlasterShip(), owner, x, y, angle);
+    public Bullet(World world, GameEntity owner, float x, float y, float angle, int damage) {
+        super(world, new BlasterShip(), owner, x, y, angle, damage);
         
         setRadius(5);        
         float r = (float) Math.toRadians(angle);

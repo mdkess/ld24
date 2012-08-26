@@ -17,8 +17,8 @@ public class TriangleShip extends Ship {
         sThrustTriangle = new Polygon(new float[] { -0.5f, -1.1f, 0.5f, -1.1f, 0, -1.5f});
     }
     
-    public TriangleShip() {
-        super(180, 200, 200);
+    public TriangleShip(float speedPct) {
+        super(180, 200*speedPct, 200);
     }
     
     @Override

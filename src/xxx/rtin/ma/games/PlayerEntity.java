@@ -39,8 +39,24 @@ public class PlayerEntity extends GameEntity {
     }
     
     @Override
+    public void render(Graphics g) {
+        if(mDeathCounter > 0) return;
+        super.render(g);
+
+    }
+    @Override
     public void update(int delta) {
+        if(mDeathCounter > 0) {
+            mDeathCounter -= delta;
+            if(mDeathCounter <= 0) {
+                mDeathCounter = 0;
+                mPos.set(mWorld.getWidth()/2, mWorld.getHeight()/2);
+            } else {
+                return;
+            }
+        }
         super.update(delta);
+        /*
         if(mPos.x < 0) {
             mPos.x = 0;
         }
@@ -52,13 +68,9 @@ public class PlayerEntity extends GameEntity {
         }
         if(mPos.y > mWorld.getHeight()) {
             mPos.y = mWorld.getHeight();
-        }
+        }*/
+    }
 
-    }
-    @Override
-    public int getTeam() {
-        return 2;
-    }
     private int mLevelCost = 10;
     private int mCoins = 0;
     private int mTotalCoins = 0;
@@ -114,7 +126,7 @@ public class PlayerEntity extends GameEntity {
     
 
     public void retarget() {
-        GameEntity target = mWorld.getNearestEntity(this);
+        GameEntity target = mWorld.getNearestEnemy(this);
         setTarget(target);
     }
 
@@ -144,6 +156,10 @@ public class PlayerEntity extends GameEntity {
     }
     public float getLevelPercent() {
         return (float)mCoins / mLevelCost;
+    }
+    public int mDeathCounter = 0;
+    public void setDeathCounter(int counter) {
+        mDeathCounter = counter;
     }
 
 

@@ -13,13 +13,19 @@ import xxx.rtin.ma.games.World;
 //  3. Shoot if in range.
 public class AttackAIController extends AIController {
 
-    
+    private int mTargetTimer = 5000;
     public AttackAIController(GameEntity owner) {
         super(owner, World.GetInstance().getPlayer(), 600, 400, 1000);
 
     }
     public void update(int delta) {
         updateState();
+        mTargetTimer -= delta;
+        if(mTargetTimer <= 0) {
+            mTargetTimer = 5000;
+            mTarget = World.GetInstance().getNearestEnemy(mOwner);
+        }
+        
         
         Vector2f toTarget = new Vector2f(mTarget.getPos()).sub(mOwner.getPos());
         float targetAngle = (float) toTarget.getTheta();
@@ -28,17 +34,23 @@ public class AttackAIController extends AIController {
         float angleDifference;
         switch(mState) {
         case ATTACK:
-            //Turn toward target
-            mOwner.turnTowardTarget(delta, targetAngle);
-            mOwner.setThrust();
-            angleDifference = StaticUtil.AngleBetween(targetAngle, mOwner.getAngle());
-            if(Math.abs(angleDifference) < 18) {
-                mOwner.fire();
+            {
+
+                //Turn toward target
+                mOwner.turnTowardTarget(delta, targetAngle);
+                mOwner.setThrust();
+                angleDifference = StaticUtil.AngleBetween(targetAngle, mOwner.getAngle());
+                if(Math.abs(angleDifference) < 18) {
+                    mOwner.fire();
+                }
             }
             break;
         case CHARGE:
-            mOwner.turnTowardTarget(delta, targetAngle);
-            mOwner.setThrust();
+            {
+
+                mOwner.turnTowardTarget(delta, targetAngle);
+                mOwner.setThrust();
+            }
             break;
         case FLEE:
             angleDifference = StaticUtil.AngleBetween(targetAngle, mOwner.getAngle());

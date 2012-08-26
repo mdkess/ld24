@@ -111,6 +111,7 @@ public class PlayerEntity extends GameEntity {
     String[] mLevelMessages = new String[]{
        "you are getting bigger",
        "your enemies run in fear",
+       "we are not so different",
        "you are getting smarter",
        "only the fittest survive",
        "you are getting stronger",

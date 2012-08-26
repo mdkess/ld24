@@ -104,6 +104,11 @@ public class World {
     }
 
     private PlayerEntity mPlayer;
+    private GameEntity mStation;
+    
+    public void setStation(GameEntity station) {
+        mStation = station;
+    }
 
     public PlayerEntity getPlayer() {
         return mPlayer;
@@ -160,10 +165,24 @@ public class World {
         mParticles.add(p);
     }
 
+    boolean mPaused = false;
+    String mPauseMessage = "";
+    public void pause(String message) {
+        mPaused = true;
+        mPauseMessage = message;
+    }
+    public void unpause() {
+        mPaused = false;
+    }
+    public boolean isPaused() {
+        return mPaused;
+    }
+    
     public void update(int delta) {
+        if(mPaused) { return; }
         if (!mWaves.isEmpty()) {
             mWaves.get(0).update(delta);
-            if (mWaves.get(0).isDone() && mEntities.size() == 1) {
+            if (mWaves.get(0).isDone() && mEntities.size() <= 2) { //hax - player + mothership
                 mWaves.remove(0);
             }
         }
@@ -235,9 +254,23 @@ public class World {
         }
 
         mPlayer.drawTarget(g);
+        //Draw line to base
+        if(mStation != null) {
+            g.setColor(Color.pink);
+            g.drawLine(mPlayer.getPos().x, mPlayer.getPos().y, mStation.getPos().x, mStation.getPos().y);
+        }
         g.popTransform();
         drawHUD(g);
-        drawToast(g);
+        
+        if(mPaused) {
+            g.setColor(Color.white);
+            g.drawString(mPauseMessage, 400 - mPauseMessage.length()*4, 200);
+        } else {
+            drawToast(g);
+        }
+        
+            
+        
     }
 
     private void drawToast(Graphics g) {
@@ -311,6 +344,7 @@ public class World {
                     target.getPos().y - mPlayer.getPos().y + 300, 600, 200);
 
         }
+
 
         // Now draw player stats on the bottom right.
 

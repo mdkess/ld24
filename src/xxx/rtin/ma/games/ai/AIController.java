@@ -1,6 +1,7 @@
 package xxx.rtin.ma.games.ai;
 
 import xxx.rtin.ma.games.GameEntity;
+import xxx.rtin.ma.games.World;
 
 //mr. ai controller controls an entity by setting its thrusters
 public abstract class AIController {
@@ -30,6 +31,7 @@ public abstract class AIController {
     public abstract void update(int delta);
     
     protected void updateState() {
+
         float distanceToTarget = mTarget.getPos().distance(mOwner.getPos());
         State oldState = mState;
         switch(mState) {
@@ -62,6 +64,7 @@ public abstract class AIController {
                 }
             //} else if(distanceToTarget < mChargeRange) {
             } else {
+                mTarget = World.GetInstance().getNearestEnemy(mOwner);
                 mState = State.CHARGE;
             }
             break;

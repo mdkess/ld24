@@ -43,7 +43,7 @@ public class GameMain extends BasicGame {
 	    b.addLauncher(0, 0, 0);
 	    b.addLauncher(0, 1, 10);
 
-	    mWorld.setPlayer(new PlayerEntity(mWorld, new TriangleShip(1.0f), mWorld.getWidth()/2, mWorld.getHeight()/2, 0));
+	    mWorld.setPlayer(new PlayerEntity(mWorld, new TriangleShip(1.0f), mWorld.getWidth()/2, mWorld.getHeight()/2, 270));
 	    mWorld.getPlayer().setTeam(1);
         mWorld.addEntity(mWorld.getPlayer());
         //mWorld.getPlayer().giveWeapon(0, new Blaster(mWorld, 500));
@@ -53,10 +53,11 @@ public class GameMain extends BasicGame {
         
         //The player must defend the mothership
 
-        GameEntity mothership = new GameEntity(mWorld, new MotherShip(), mWorld.getWidth()/2, mWorld.getHeight()/2 + 200, 0);
+        GameEntity mothership = new GameEntity(mWorld, new MotherShip(), mWorld.getWidth()/2, mWorld.getHeight()/2 + 210, 0);
         mothership.setRadius(100);
         mothership.setTeam(1);
         mWorld.addEntity(mothership);
+        mWorld.setStation(mothership);
         
         RocketBattery battery = new RocketBattery("Rocket Salvo", mWorld, 1000, 10);
         battery.addLauncher(0, -1, 270);
@@ -66,8 +67,7 @@ public class GameMain extends BasicGame {
         
         mothership.setWeapon(battery);
         mothership.setController(new StationAIController(mothership));
-        
-        
+
         
         //playIntro();
         
@@ -111,13 +111,12 @@ public class GameMain extends BasicGame {
 	    mWorld.toast("", 1000);
 	    mWorld.toast("[kinetic dream]", 4000, SoundCache.INTRO);
 	    mWorld.toast("", 1000);
-	    mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Weapons: 1-9 Target: E Help: H", 4000);
+	    mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Weapons: 1-9 Target: E Help: H Pause: P", 4000);
 	    mWorld.toast("", 1000);
 	    mWorld.toast("-- defend the bioforge --", 5000);
 	}
 
 	private void createWaves() {
-	    /*
 	    {
 	        Wave w1 = new Wave("(1) promethean space", 0);
     	    for(int i=0; i < 10; ++i) {
@@ -134,7 +133,7 @@ public class GameMain extends BasicGame {
     	    mWorld.addWave(w1);
 	    }
 	    {
-    	    Wave w2 = new Wave("(2) knowledge", 10000);
+    	    Wave w2 = new Wave("(2) knowledge", 5000);
             for(int i=0; i < 10; ++i) {
                 GameEntity e = new GameEntity(mWorld, new TriangleShip(0.5f), 100*i, 0, 0);
                 e.setMaxHealth(5);
@@ -150,7 +149,7 @@ public class GameMain extends BasicGame {
             mWorld.addWave(w2);
 	    }
 	    {
-            Wave w3 = new Wave("(3) they evolved", 10000);
+            Wave w3 = new Wave("(3) they evolved", 5000);
             for(int i=0; i < 5; ++i) {
                 {
                     GameEntity e = new GameEntity(mWorld, new TriangleShip(0.5f), 100*i, 0, 0);
@@ -182,7 +181,7 @@ public class GameMain extends BasicGame {
         }
         
 	    {
-            Wave w4 = new Wave("(4) and so did you", 10000);
+            Wave w4 = new Wave("(4) and so did you", 5000);
             for(int i=0; i < 10; ++i) {
                 {
                     GameEntity e = new GameEntity(mWorld, new TriangleShip(0.5f), 300*i, 0, 0);
@@ -212,9 +211,8 @@ public class GameMain extends BasicGame {
             }
             mWorld.addWave(w4);
 	    }
-	    */
         {
-            Wave w5 = new Wave("(5) something different", 0);
+            Wave w5 = new Wave("(5) something different", 5000);
             for(int i=0; i < 10; ++i) {
                 {
                     GameEntity e = new GameEntity(mWorld, new TriangleShip(0.5f), 300*i, 0, 0);
@@ -256,6 +254,64 @@ public class GameMain extends BasicGame {
             }
             mWorld.addWave(w5);
         }
+        {
+            Wave w6 = new Wave("(6) destroy the enemy station", 5000);
+            
+            GameEntity mothership = new GameEntity(mWorld, new MotherShip(), mWorld.getWidth()/2, 0, 0);
+            mothership.setRadius(100);
+            
+            RocketBattery battery = new RocketBattery("Rocket Salvo", mWorld, 1000, 10);
+            battery.addLauncher(0, -1, 270);
+            battery.addLauncher(0,  1, 90);
+            battery.addLauncher(-1, 0, 180);
+            battery.addLauncher( 1, 0, 0);
+            
+            mothership.setWeapon(battery);
+            mothership.setController(new StationAIController(mothership));
+            w6.addEnemy(0, mothership);
+            
+            
+            for(int i=0; i < 10; ++i) {
+                {
+                    GameEntity e = new GameEntity(mWorld, new TriangleShip(0.5f), 300*i, 0, 0);
+                    e.setMaxHealth(5);
+                    e.setMaxShield(5);
+                    e.setHealthRegen(1);
+                    e.setShieldRegen(1);
+                    e.setWeapon(new Blaster(mWorld, 2000, 5));
+    
+                    //e.setController(new DefendAIController(e));
+                    e.setTarget(mWorld.getPlayer());
+                    
+                    w6.addEnemy(0, e);
+                }
+                {
+                    GameEntity e = new GameEntity(mWorld, new SquareShip(0.5f), 300, 300+300*i, 0);
+                    e.setMaxHealth(5);
+                    e.setMaxShield(5);
+                    e.setHealthRegen(1);
+                    e.setShieldRegen(1);
+                    e.setWeapon(new MissileLauncher(mWorld, 2000, 10));
+    
+                    //e.setController(new DefendAIController(e));
+                    e.setTarget(mWorld.getPlayer());
+                    w6.addEnemy(0, e);
+                }
+                {
+                    GameEntity e = new GameEntity(mWorld, new CircleShip(0.8f), 300, 300+300*i, 0);
+                    e.setMaxHealth(5);
+                    e.setMaxShield(5);
+                    e.setHealthRegen(1);
+                    e.setShieldRegen(1);
+                    e.setWeapon(new Blaster(mWorld, 2000, 5));
+    
+                    e.setController(new AttackAIController(e));
+                    e.setTarget(mWorld.getPlayer());
+                    w6.addEnemy(0, e);
+                }        
+            }
+            mWorld.addWave(w6);
+        }
         
 	}
 	
@@ -268,30 +324,39 @@ public class GameMain extends BasicGame {
 	    //TODO Move to World.
 	    Input input = gc.getInput();
 	    PlayerEntity player = mWorld.getPlayer();
-	    if(input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_UP)) {
-	        //thrust
-	        player.setThrust();
+	    if(!mWorld.isPaused()) {
+    	    if(input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_UP)) {
+    	        //thrust
+    	        player.setThrust();
+    	    }
+    	    if(input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)) {
+                //rotate CCW
+    	        player.rotateCCW(delta);
+            }
+            if(input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_DOWN) || input.isKeyDown(Input.KEY_X)) {
+                //stop
+                player.stop();
+            }
+            if(input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)) {
+                //rotate CW
+                player.rotateCW(delta);
+            }
+            if(input.isKeyDown(Input.KEY_SPACE)) {
+                player.fire();
+            }
+            if(input.isKeyPressed(Input.KEY_E)) {
+                player.retarget();
+            }
+            if(input.isKeyPressed(Input.KEY_H)) {
+                mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Target: E Help: H Pause: P", 1000);
+            }
 	    }
-	    if(input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)) {
-            //rotate CCW
-	        player.rotateCCW(delta);
-        }
-        if(input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_DOWN) || input.isKeyDown(Input.KEY_X)) {
-            //stop
-            player.stop();
-        }
-        if(input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)) {
-            //rotate CW
-            player.rotateCW(delta);
-        }
-        if(input.isKeyDown(Input.KEY_SPACE)) {
-            player.fire();
-        }
-        if(input.isKeyPressed(Input.KEY_E)) {
-            player.retarget();
-        }
-        if(input.isKeyPressed(Input.KEY_H)) {
-            mWorld.toast("Move: Arrow keys/WASD. Shoot: Space. Target: E Help: H", 1000);
+        if(input.isKeyPressed(Input.KEY_P)){
+            if(!mWorld.isPaused()) {
+                mWorld.pause("Dream paused. Press P to resume.");
+            } else {
+                mWorld.unpause();
+            }
         }
         //TODO not new each time.
         //TODO wpn stats
